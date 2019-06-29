@@ -37,14 +37,25 @@ const handymenService = {
                 'rev.text',
                 'rev.rating',
                 'rev.date_created',
-                ...userFields,
+                db.raw(
+                    `row_to_json(
+                      (SELECT tmp FROM (
+                        SELECT
+                          usr.id,
+                          usr.user_name,
+                          usr.full_name,
+                          usr.date_created,
+                          usr.date_modified
+                      ) tmp)
+                    ) AS "user"`
+                )
             )
-            .where('rev.provider_id', id)
             .leftJoin(
                 'users AS usr',
                 'rev.user_id',
                 'usr.id',
             )
+            .where('rev.provider_id', id)
             .groupBy('rev.id', 'usr.id')
     }
 }

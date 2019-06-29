@@ -24,6 +24,7 @@ app.get('/', (req, res) => {
 
 app.use('/api', servicesRouter)
 app.use('/api/providers', handymenRouter)
+app.use('/api/auth', authRouter)
 
 
 app.use(function errorHandler(error, reg, res, next) {
