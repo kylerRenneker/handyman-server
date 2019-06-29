@@ -4,12 +4,15 @@ const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
+const handymenRouter = require('./handymen/handymen-router')
+const servicesRouter = require('./services/services-router')
+const authRouter = require('./')
 
 const app = express()
 
 const morganOption = (NODE_ENV === 'production')
-  ? 'tiny'
-  : 'common';
+    ? 'tiny'
+    : 'common';
 
 app.use(morgan(morganOption))
 app.use(cors())
@@ -19,15 +22,19 @@ app.get('/', (req, res) => {
     res.send('Hello, world!')
 })
 
-app.use(function errorHandler(error, reg, res, next)) {
+app.use('/api', servicesRouter)
+app.use('/api/providers', handymenRouter)
+
+
+app.use(function errorHandler(error, reg, res, next) {
     let response
     if (NODE_ENV === 'production') {
-        response = { error: { message: 'server error'} }
+        response = { error: { message: 'server error' } }
     } else {
         console.error(error)
         response = { message: error.message, error }
     }
     res.status(500).json(reponse)
-}
+})
 
 module.exports = app
