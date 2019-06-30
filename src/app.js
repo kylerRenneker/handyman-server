@@ -7,6 +7,7 @@ const { NODE_ENV } = require('./config')
 const handymenRouter = require('./handymen/handymen-router')
 const servicesRouter = require('./services/services-router')
 const authRouter = require('./auth/auth-routher')
+const usersRouter = require('./users/users-router')
 
 const app = express()
 
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 app.use('/api', servicesRouter)
 app.use('/api/providers', handymenRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/users', usersRouter)
 
 
 app.use(function errorHandler(error, reg, res, next) {
@@ -35,7 +37,7 @@ app.use(function errorHandler(error, reg, res, next) {
         console.error(error)
         response = { message: error.message, error }
     }
-    res.status(500).json(reponse)
+    res.status(500).json(response)
 })
 
 module.exports = app
