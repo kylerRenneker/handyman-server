@@ -57,6 +57,22 @@ usersRouter
     })
 
 usersRouter
+    .post('/handyman', jsonBodyParser, (req, res, next) => {
+        const { display_name, introduction, location, services } = req.body
+        const newProvider = { display_name, introduction, location, services }
+
+        for (const field of ['display_name', 'location', 'services'])
+            if (!req.body[field])
+                return res.status(400).json({
+                    error: `Missing '${field}' in request body`
+                })
+        UsersService.insertProvider(
+            req.app.get('db'),
+            newProvider
+        )
+    })
+
+usersRouter
     .route('/loggedIn')
     .all(requireAuth)
     .get((req, res) => {

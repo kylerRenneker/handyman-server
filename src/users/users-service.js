@@ -26,6 +26,13 @@ const UsersService = {
             .returning('*')
             .then(([user]) => user)
     },
+    insertProvider(db, newProvider) {
+        return db
+            .instert(newProvider)
+            .into('providers')
+            .returning('*')
+            .then(([provider]) => provider)
+    },
     validatePassword(password) {
         if (password.length < 8) {
             return 'Password be longer than 8 characters'
