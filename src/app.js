@@ -8,6 +8,7 @@ const handymenRouter = require('./handymen/handymen-router')
 const servicesRouter = require('./services/services-router')
 const authRouter = require('./auth/auth-routher')
 const usersRouter = require('./users/users-router')
+const reviewsRouter = require('./reviews/reviews-router')
 
 const app = express()
 
@@ -27,6 +28,7 @@ app.use('/api', servicesRouter)
 app.use('/api/providers', handymenRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
+app.use('/api/reviews', reviewsRouter)
 
 
 app.use(function errorHandler(error, reg, res, next) {

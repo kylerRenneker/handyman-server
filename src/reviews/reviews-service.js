@@ -24,7 +24,7 @@ const ReviewsService = {
                 )
             )
             .leftJoin(
-                'thingful_users AS usr',
+                'users AS usr',
                 'rev.user_id',
                 'usr.id',
             )

@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
 const UsersService = require('./users-service')
+const { requireAuth } = require('../middlware/jwt-auth')
 
 const usersRouter = express.Router()
 const jsonBodyParser = express.json()
@@ -54,5 +55,18 @@ usersRouter
             })
             .catch(next)
     })
+
+usersRouter
+    .route('/loggedIn')
+    .all(requireAuth)
+    .get((req, res) => {
+        UsersService.getUserWithId(
+            req.app.get('db'),
+            req.user.id
+        )
+            .then(user => res.json(user))
+    })
+
+
 
 module.exports = usersRouter
