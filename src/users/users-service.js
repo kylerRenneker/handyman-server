@@ -28,7 +28,7 @@ const UsersService = {
     },
     insertProvider(db, newProvider) {
         return db
-            .instert(newProvider)
+            .insert(newProvider)
             .into('providers')
             .returning('*')
             .then(([provider]) => provider)

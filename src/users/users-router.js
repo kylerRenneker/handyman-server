@@ -58,18 +58,30 @@ usersRouter
 
 usersRouter
     .post('/handyman', jsonBodyParser, (req, res, next) => {
-        const { display_name, introduction, location, services } = req.body
-        const newProvider = { display_name, introduction, location, services }
+        const { user_id, provider_name, introduction, location, services } = req.body
 
-        for (const field of ['display_name', 'location', 'services'])
+
+        const serviceArr = '{' + services.join() + '}'
+        console.log(serviceArr)
+
+        // const newProvider = { user_id, provider_name, introduction, location, services: serviceArr }
+        // console.log(newProvider)
+        for (const field of ['provider_name', 'location', 'services'])
             if (!req.body[field])
                 return res.status(400).json({
                     error: `Missing '${field}' in request body`
                 })
-        UsersService.insertProvider(
-            req.app.get('db'),
-            newProvider
-        )
+        req.app.get('db').raw('insert into providers(user_id, provider_name, introduction, services, location) values(?, ?, ?, ?, ?)', [`${user_id}`, `${provider_name}`, `${introduction}`, `${serviceArr}`, `${location}`])
+            .then(function () {
+                req.app.get('db').select().from('providers')
+                    .then(function (providers) {
+                        res.send(providers)
+                    })
+            })
+        // UsersService.insertProvider(
+        //     req.app.get('db'),
+        //     newProvider
+        // )
     })
 
 usersRouter
@@ -81,6 +93,7 @@ usersRouter
             req.user.id
         )
             .then(user => res.json(user))
+            .catch(next)
     })
 
 
