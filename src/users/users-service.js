@@ -8,6 +8,7 @@ const UsersService = {
         return db
             .from('users')
             .select(
+                'users.id',
                 'users.email'
             )
             .where('users.id', userId)

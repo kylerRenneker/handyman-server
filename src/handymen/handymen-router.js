@@ -19,7 +19,7 @@ handymenRouter
                     })
                 }
                 else {
-                    res.json(handymen)
+                    res.json(HandymenService.serializeProviders(handymen))
                 }
             })
             .catch(next)
@@ -29,7 +29,7 @@ handymenRouter
     .route('/:handyman_id')
     .all(checkProviderExists)
     .get((req, res) => {
-        res.json(res.provider)
+        res.json(HandymenService.serializeProvider(res.provider))
     })
 
 handymenRouter
@@ -41,7 +41,7 @@ handymenRouter
             req.params.handyman_id
         )
             .then(reviews => {
-                res.json(reviews)
+                res.json(HandymenService.serializeProviderReviews(reviews))
             })
             .catch(next)
     })

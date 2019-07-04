@@ -1,6 +1,6 @@
 CREATE TABLE quote_requests
 (
-    id SERIAL NOT NULL,
+    id SERIAL PRIMARY KEY,
     provider_id INTEGER REFERENCES providers(id) ON DELETE SET NULL,
     user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     location TEXT NOT NULL,

@@ -48,7 +48,6 @@ usersRouter
                             .then(user => {
                                 res
                                     .status(201)
-                                    .location(path.posix.join(req.originalUrl, `/${user.id}`))
                                     .json(UsersService.serializeUser(user))
                             })
                     })
@@ -60,34 +59,30 @@ usersRouter
     .post('/handyman', jsonBodyParser, (req, res, next) => {
         const { user_id, provider_name, introduction, location, services } = req.body
 
-
         const serviceArr = '{' + services.join() + '}'
-        console.log(serviceArr)
 
-        // const newProvider = { user_id, provider_name, introduction, location, services: serviceArr }
-        // console.log(newProvider)
+        const newProvider = { user_id, provider_name, introduction, location, services: serviceArr }
+
         for (const field of ['provider_name', 'location', 'services'])
             if (!req.body[field])
                 return res.status(400).json({
                     error: `Missing '${field}' in request body`
                 })
-        req.app.get('db').raw('insert into providers(user_id, provider_name, introduction, services, location) values(?, ?, ?, ?, ?)', [`${user_id}`, `${provider_name}`, `${introduction}`, `${serviceArr}`, `${location}`])
-            .then(function () {
-                req.app.get('db').select().from('providers')
-                    .then(function (providers) {
-                        res.send(providers)
-                    })
+        UsersService.insertProvider(
+            req.app.get('db'),
+            newProvider
+        )
+            .then(user => {
+                res.status(201)
+                res.json(UsersService.serializeUser(user))
             })
-        // UsersService.insertProvider(
-        //     req.app.get('db'),
-        //     newProvider
-        // )
+            .catch(next)
     })
 
 usersRouter
     .route('/loggedIn')
     .all(requireAuth)
-    .get((req, res) => {
+    .get((req, res, next) => {
         UsersService.getUserWithId(
             req.app.get('db'),
             req.user.id

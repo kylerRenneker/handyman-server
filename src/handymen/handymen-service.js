@@ -1,5 +1,5 @@
-// const xss = require('xss')
-// const Treeize = require('treeize')
+const xss = require('xss')
+const Treeize = require('treeize')
 
 const handymenService = {
     getHandymenByLocation(db, zipcode) {
@@ -57,6 +57,44 @@ const handymenService = {
             )
             .where('rev.provider_id', id)
             .groupBy('rev.id', 'usr.id')
+    },
+
+    serializeProviders(providers) {
+        return providers.map(this.serializeProvider)
+    },
+
+    serializeProvider(provider) {
+        const providerTree = new Treeize()
+        const providerData = providerTree.grow([provider]).getData()[0]
+
+        return {
+            id: providerData.id,
+            provider_name: xss(providerData.provider_name),
+            introduction: xss(providerData.introduction),
+            services: providerData.services,
+            location: xss(providerData.location),
+            date_created: providerData.date_created,
+            number_of_reviews: Number(providerData.number_of_reviews) || 0,
+            average_review_rating: Math.round(providerData.average_review_rating) || 0,
+        }
+    },
+
+    serializeProviderReviews(reviews) {
+        return reviews.map(this.serializeProviderReview)
+    },
+
+    serializeProviderReview(review) {
+        const reviewTree = new Treeize()
+        const reviewData = reviewTree.grow([review]).getData()[0]
+
+        return {
+            id: reviewData.id,
+            rating: reviewData.rating,
+            provider_id: reviewData.provider_id,
+            text: xss(reviewData.text),
+            user: reviewData.user || {},
+            date_created: reviewData.date_created
+        }
     }
 }
 
