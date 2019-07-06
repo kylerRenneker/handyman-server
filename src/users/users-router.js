@@ -74,7 +74,7 @@ usersRouter
         )
             .then(user => {
                 res.status(201)
-                res.json(UsersService.serializeUser(user))
+                res.json(UsersService.serializeHandyman(user))
             })
             .catch(next)
     })
