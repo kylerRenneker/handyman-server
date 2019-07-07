@@ -13,19 +13,19 @@ This API allows users to search for (GET) handymen by location & service, post a
 
 ### Public Routes
 
-GET - /providers
-  This endpoint is used to GET a list of providers by location and service selected
-POST - /auth/login
-  This endpoint is use to post a login request
-POST - /users
-  Used for signing up as a new user (handyman or client)
+* GET - /providers
+  * This endpoint is used to GET a list of providers by location and service selected
+* POST - /auth/login
+  * This endpoint is use to post a login request
+* POST - /users
+  * Used for signing up as a new user (handyman or client)
 
 ### Private Routes
 
-POST - /reviews
-  Used to post a review on Handyman
-POST - /quote
-  Used to post quote request
+* POST - /reviews
+  * Used to post a review on Handyman
+* POST - /quote
+  * Used to post quote request
   
 ## Technologies Used
 
