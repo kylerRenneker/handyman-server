@@ -88,12 +88,11 @@ usersRouter
 usersRouter
     .route('/loggedIn')
     .all(requireAuth)
-    .get((req, res, next) => {
+    .get((req, res) => {
         console.log(req.user)
         const { id, email } = req.user
         const newUser = { id, email }
-        res.send(res.json(newUser))
-            .catch(next)
+        res.send(JSON.stringify(newUser))
     })
 
 

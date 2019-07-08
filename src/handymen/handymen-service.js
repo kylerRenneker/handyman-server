@@ -8,6 +8,7 @@ const handymenService = {
             .from('providers')
             .select(
                 'providers.id',
+                'providers.user_id',
                 'providers.provider_name',
                 'providers.introduction',
                 'providers.services',
@@ -69,6 +70,7 @@ const handymenService = {
 
         return {
             id: providerData.id,
+            user_id: providerData.user_id,
             provider_name: xss(providerData.provider_name),
             introduction: xss(providerData.introduction),
             services: providerData.services,
