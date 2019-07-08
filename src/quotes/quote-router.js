@@ -11,8 +11,6 @@ quoteRouter
         const { provider_id, user_id, location, email, description, services } = req.body
         const newQuoteRequest = { provider_id, user_id, location, email, description, services }
 
-        console.log(req.user)
-
         for (const [key, value] of Object.entries(newQuoteRequest))
             if (value == null || value == '')
                 return res.status(400).json({
@@ -21,7 +19,7 @@ quoteRouter
 
         QuoteService.insertQuote(req.app.get('db'), newQuoteRequest)
             .then(quote => {
-                res.json(quote)
+                res.json(QuoteService.serializeQuote(quote))
             })
             .catch(next)
     })

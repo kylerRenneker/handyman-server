@@ -1,5 +1,4 @@
 const express = require('express')
-const path = require('path')
 const UsersService = require('./users-service')
 const { requireAuth } = require('../middlware/jwt-auth')
 
@@ -89,7 +88,6 @@ usersRouter
     .route('/loggedIn')
     .all(requireAuth)
     .get((req, res) => {
-        console.log(req.user)
         const { id, email } = req.user
         const newUser = { id, email }
         res.send(JSON.stringify(newUser))

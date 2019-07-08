@@ -29,7 +29,6 @@ handymenRouter
     .route('/:handyman_id')
     .all(checkProviderExists)
     .get((req, res) => {
-        console.log(res.provider)
         res.json(HandymenService.serializeProvider(res.provider))
     })
 
