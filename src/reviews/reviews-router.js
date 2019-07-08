@@ -22,7 +22,6 @@ reviewsRouter.route('/').post(requireAuth, jsonBodyParser, (req, res, next) => {
         .then(review => {
             res
                 .status(201)
-                .location(path.posix.join(req.originalUrl, `/${review.id}`))
                 .json(ReviewsService.serializeReview(review));
         })
         .catch(next);

@@ -61,6 +61,12 @@ usersRouter
 
         const serviceArr = '{' + services.join() + '}'
 
+        if (!Number(location)) {
+            return res.status(400).json({
+                error: 'The location must be a 5 digit number'
+            })
+        }
+
         const newProvider = { user_id, provider_name, introduction, location, services: serviceArr }
 
         for (const field of ['provider_name', 'location', 'services'])
