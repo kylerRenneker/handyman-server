@@ -46,6 +46,19 @@ handymenRouter
             .catch(next)
     })
 
+handymenRouter
+    .route('/user/:userId')
+    .get((req, res, next) => {
+        HandymenService.getByUserId(
+            req.app.get('db'),
+            req.params.userId
+        )
+            .then(provider => {
+                res.json(provider)
+            })
+    })
+
+
 async function checkProviderExists(req, res, next) {
     try {
         const provider = await HandymenService.getById(

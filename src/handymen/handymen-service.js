@@ -30,6 +30,12 @@ const handymenService = {
             .where('providers.id', id)
             .first()
     },
+    getByUserId(db, userId) {
+        return db
+            .from('providers')
+            .select('*')
+            .where('providers.user_id', userId)
+    },
     getReviewsForHandymen(db, id) {
         return db
             .from('provider_reviews AS rev')
