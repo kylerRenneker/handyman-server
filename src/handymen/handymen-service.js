@@ -3,7 +3,6 @@ const Treeize = require('treeize')
 
 const handymenService = {
     getHandymenByLocation(db, zipcode) {
-        console.log(zipcode)
         return db
             .from('providers')
             .select(
@@ -35,6 +34,7 @@ const handymenService = {
             .from('providers')
             .select('*')
             .where('providers.user_id', userId)
+            .first()
     },
     getReviewsForHandymen(db, id) {
         return db

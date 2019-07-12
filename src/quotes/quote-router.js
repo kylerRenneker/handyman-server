@@ -24,4 +24,17 @@ quoteRouter
             .catch(next)
     })
 
+quoteRouter
+    .route('/myQuotes/:handymanId')
+    .get(requireAuth, (req, res, next) => {
+        QuoteService.getQuotesForHandyman(
+            req.app.get('db'),
+            req.params.handymanId
+        )
+            .then(quotes => {
+                res.json(quotes)
+            })
+            .catch(next)
+    })
+
 module.exports = quoteRouter

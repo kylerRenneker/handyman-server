@@ -26,19 +26,19 @@ handymenRouter
     })
 
 handymenRouter
-    .route('/:handyman_id')
+    .route('/:handymanId')
     .all(checkProviderExists)
     .get((req, res) => {
         res.json(HandymenService.serializeProvider(res.provider))
     })
 
 handymenRouter
-    .route('/:handyman_id/reviews/')
+    .route('/:handymanId/reviews/')
     .all(checkProviderExists)
     .get((req, res, next) => {
         HandymenService.getReviewsForHandymen(
             req.app.get('db'),
-            req.params.handyman_id
+            req.params.handymanId
         )
             .then(reviews => {
                 res.json(HandymenService.serializeProviderReviews(reviews))
@@ -56,6 +56,7 @@ handymenRouter
             .then(provider => {
                 res.json(provider)
             })
+            .catch(next)
     })
 
 
@@ -63,7 +64,7 @@ async function checkProviderExists(req, res, next) {
     try {
         const provider = await HandymenService.getById(
             req.app.get('db'),
-            req.params.handyman_id,
+            req.params.handymanId,
             req.query.zipcode
         )
 

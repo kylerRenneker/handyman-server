@@ -10,12 +10,22 @@ const UsersService = {
             .first()
             .then(user => !!user)
     },
+    getUserById(db, id) {
+        return db('users')
+            .where({ id })
+            .first()
+    },
     insertUser(db, newUser) {
         return db
             .insert(newUser)
             .into('users')
             .returning('*')
             .then(([user]) => user)
+    },
+    updateUser(db, id, userInfo) {
+        return db('users')
+            .where({ id })
+            .update(userInfo)
     },
     insertProvider(db, newProvider) {
         return db

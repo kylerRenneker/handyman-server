@@ -1,5 +1,6 @@
 const express = require('express')
 const UsersService = require('./users-service')
+const AuthService = require('../auth/auth-service')
 const { requireAuth } = require('../middlware/jwt-auth')
 
 const usersRouter = express.Router()
@@ -9,18 +10,7 @@ usersRouter
     .post('/', jsonBodyParser, (req, res, next) => {
         const { password, user_name, full_name, email } = req.body
 
-        for (const field of ['full_name', 'user_name', 'password', 'email'])
-            if (!req.body[field])
-                return res.status(400).json({
-                    error: `Missing '${field}' in request body`
-                })
-
-        // TODO: check user_name doesn't start with spaces
-
-        const passwordError = UsersService.validatePassword(password)
-
-        if (passwordError)
-            return res.status(400).json({ error: passwordError })
+        checkFields(req, res)
 
         UsersService.hasUserWithUserName(
             req.app.get('db'),
@@ -92,6 +82,65 @@ usersRouter
         const newUser = { id, full_name, user_name, email }
         res.send(JSON.stringify(newUser))
     })
+
+usersRouter
+    .route('/:userId')
+    .patch(jsonBodyParser, (req, res, next) => {
+        const { full_name, user_name, password, email } = req.body
+
+        // checkFields(req, res)
+
+        UsersService.getUserById(
+            req.app.get('db'),
+            req.params.userId
+        )
+            .then(user => user)
+            .then(user => {
+                return AuthService.comparePasswords(password, user.password)
+            })
+            .then(res => {
+                console.log(res)
+            })
+
+        // .then(pass => {
+        //     if (pass) {
+        //         AuthService.getUserWithUserName(
+        //             req.app.get('db'),
+        //             user_name
+        //         )
+        //             .then(user => {
+        //                 if (user.id !== Number(req.params.userId)) {
+        //                     return res.status(404).json({
+        //                         error: 'That username is taken'
+        //                     })
+        //                 }else{
+
+        //                 }
+        //             })
+        //         UsersService.hashPassword(password)
+        //             .then(hashedPassword => {
+        //                 const updatedUser = {
+        //                     full_name: full_name,
+
+        //                 }
+        //             })
+        //     }
+        //})
+        //})
+    })
+
+const checkFields = (req, res) => {
+    for (const field of ['full_name', 'user_name', 'password', 'email'])
+        if (!req.body[field])
+            return res.status(400).json({
+                error: `Missing '${field}' in request body`
+            })
+
+    const passwordError = UsersService.validatePassword(password)
+
+    if (passwordError)
+        return res.status(400).json({ error: passwordError })
+}
 
 
 
