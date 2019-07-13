@@ -10,7 +10,16 @@ usersRouter
     .post('/', jsonBodyParser, (req, res, next) => {
         const { password, user_name, full_name, email } = req.body
 
-        checkFields(req, res, password)
+        for (const field of ['full_name', 'user_name', 'password', 'email'])
+            if (!req.body[field])
+                return res.status(400).json({
+                    error: `Missing '${field}' in request body`
+                })
+
+        const passwordError = UsersService.validatePassword(password)
+
+        if (passwordError)
+            return res.status(400).json({ error: passwordError })
 
         UsersService.hasUserWithUserName(
             req.app.get('db'),
@@ -88,24 +97,24 @@ usersRouter
     .patch(jsonBodyParser, (req, res, next) => {
         let { full_name, user_name, password, email } = req.body
 
-        checkFields(req, res, password)
+        for (const field of ['full_name', 'user_name', 'password', 'email'])
+            if (!req.body[field])
+                return res.status(400).json({
+                    error: `Missing '${field}' in request body`
+                })
+
+        const passwordError = UsersService.validatePassword(password)
+
+        if (passwordError)
+            return res.status(400).json({ error: passwordError })
 
         UsersService.getUserById(
             req.app.get('db'),
             req.params.userId
         )
             .then(user => user)
-            .then(user => {
-                return AuthService.comparePasswords(password, user.password)
-            })
-            .then(res => (!res) ? UsersService.hashPassword(password) : res) //return to if else
-            .then(res => {
-                if (res === true) {
-                    return UsersService.hashPassword(password)
-                } else {
-                    return password = res
-                }
-            })
+            .then(res => UsersService.hashPassword(password))
+            .then(res => password = res)
             .then(res => {
                 return AuthService.getUserWithUserName(
                     req.app.get('db'),
@@ -134,23 +143,28 @@ usersRouter
                 )
             })
             .then(() => {
-                res.end()
+                res.status(201).end()
             })
             .catch(next)
     })
 
-const checkFields = (req, res, password) => {
-    for (const field of ['full_name', 'user_name', 'password', 'email'])
-        if (!req.body[field])
-            return res.status(400).json({
-                error: `Missing '${field}' in request body`
-            })
 
-    const passwordError = UsersService.validatePassword(password)
 
-    if (passwordError)
-        return res.status(400).json({ error: passwordError })
-}
+//checkFields was meant to share the functionality between user sign on and update user but would 
+//not stop parent function from continuing to run despite errors
+
+// const checkFields = (req, res, password) => {
+//     for (const field of ['full_name', 'user_name', 'password', 'email'])
+//         if (!req.body[field])
+//             return res.status(400).json({
+//                 error: `Missing '${field}' in request body`
+//             })
+
+//     const passwordError = UsersService.validatePassword(password)
+
+//     if (passwordError)
+//         return res.status(400).json({ error: passwordError })
+// }
 
 
 
