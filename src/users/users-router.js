@@ -10,7 +10,7 @@ usersRouter
     .post('/', jsonBodyParser, (req, res, next) => {
         const { password, user_name, full_name, email } = req.body
 
-        checkFields(req, res)
+        checkFields(req, res, password)
 
         UsersService.hasUserWithUserName(
             req.app.get('db'),
@@ -86,9 +86,9 @@ usersRouter
 usersRouter
     .route('/:userId')
     .patch(jsonBodyParser, (req, res, next) => {
-        const { full_name, user_name, password, email } = req.body
+        let { full_name, user_name, password, email } = req.body
 
-        // checkFields(req, res)
+        checkFields(req, res, password)
 
         UsersService.getUserById(
             req.app.get('db'),
@@ -98,38 +98,48 @@ usersRouter
             .then(user => {
                 return AuthService.comparePasswords(password, user.password)
             })
+            .then(res => (!res) ? UsersService.hashPassword(password) : res) //return to if else
             .then(res => {
-                console.log(res)
+                if (res === true) {
+                    return UsersService.hashPassword(password)
+                } else {
+                    return password = res
+                }
             })
+            .then(res => {
+                return AuthService.getUserWithUserName(
+                    req.app.get('db'),
+                    user_name
+                )
+            })
+            .then(res => {
+                if (!res) {
+                    return null;
+                }
+                else {
+                    if (res.id !== Number(req.params.userId)) {
+                        return res.status(404).json({
+                            error: 'That username is taken'
+                        })
+                    }
+                }
 
-        // .then(pass => {
-        //     if (pass) {
-        //         AuthService.getUserWithUserName(
-        //             req.app.get('db'),
-        //             user_name
-        //         )
-        //             .then(user => {
-        //                 if (user.id !== Number(req.params.userId)) {
-        //                     return res.status(404).json({
-        //                         error: 'That username is taken'
-        //                     })
-        //                 }else{
-
-        //                 }
-        //             })
-        //         UsersService.hashPassword(password)
-        //             .then(hashedPassword => {
-        //                 const updatedUser = {
-        //                     full_name: full_name,
-
-        //                 }
-        //             })
-        //     }
-        //})
-        //})
+            })
+            .then(res => {
+                const updatedUser = { full_name, user_name, password, email }
+                return UsersService.updateUser(
+                    req.app.get('db'),
+                    req.params.userId,
+                    updatedUser
+                )
+            })
+            .then(() => {
+                res.end()
+            })
+            .catch(next)
     })
 
-const checkFields = (req, res) => {
+const checkFields = (req, res, password) => {
     for (const field of ['full_name', 'user_name', 'password', 'email'])
         if (!req.body[field])
             return res.status(400).json({
