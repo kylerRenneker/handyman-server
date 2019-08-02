@@ -142,7 +142,8 @@ usersRouter
                     updatedUser
                 )
             })
-            .then(() => {
+            .then((user) => {
+                res.send(user)
                 res.status(201).end()
             })
             .catch(next)

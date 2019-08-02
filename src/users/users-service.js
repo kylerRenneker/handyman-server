@@ -26,6 +26,8 @@ const UsersService = {
         return db('users')
             .where({ id })
             .update(userInfo)
+            .returning('user_name')
+            .then(res => res)
     },
     insertProvider(db, newProvider) {
         return db

@@ -33,7 +33,7 @@ app.use('/api/reviews', reviewsRouter)
 app.use('/api/quote', quoteRouter)
 
 
-app.use(function errorHandler(error, reg, res, next) {
+app.use(function errorHandler(error, req, res, next) {
     let response
     if (NODE_ENV === 'production') {
         response = { error: { message: 'server error' } }
